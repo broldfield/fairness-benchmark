@@ -1,6 +1,6 @@
 # fairness-benchmark
 
-Currently without name.
+Name Pending.
 
 ## References
 
@@ -34,9 +34,8 @@ Configuration is handled by args in the command line.
 | --dataset      | What dataset to load.                                                       | adult, bank, compas, german, meps, none    |
 | --dataset_path | If the --dataset arg is none, add in a path to a custom dataset.            | fairness_benchmark/data/dataset/my_custom |
 | --target       | The Target Attribute for prediction                                         | income                                    |
-| --sensitive    | The Sensitive Attribute                                                     | sex, age, income, race                    |
-| --preprocess   | The Fairness Preprocessing Technique to be used.                            | DIR, LFR, OP, RW, none                    |
-| --eval         | The Evaluation Metrics to be used. Can accept multiple seperated by commas. | acc, ap, dp, eopp, eodd                   |
+| --sensitive    | The Sensitive Attribute                                                     | sex, age, income, race, RACE                    |
+| --preprocess   | The Fairness Preprocessing Technique to be used.                            | dir, lfr, op, rw, none                    |
 
 ### Task
 
