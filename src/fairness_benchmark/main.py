@@ -71,12 +71,6 @@ if __name__ == "__main__":
         help="Pre-Processing Algorithm: rw, dir, lfr, op, or none",
     )
     parser.add_argument(
-        "--evaluation",
-        type=str,
-        default="acc,ap,dp,eopp,eodd",
-        help="Evaluation metrics separated by commas, e.g., acc,ap,dp",
-    )
-    parser.add_argument(
         "--model",
         type=str,
         default="lr",
