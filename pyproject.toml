@@ -1,0 +1,24 @@
+[project]
+name = "fairness-benchmark"
+version = "0.1.0"
+description = ""
+authors = [{ name = "Brodie Oldfield", email = "Brodie.Oldfield@gmail.com" }]
+readme = "README.md"
+requires-python = "=3.12.7"
+dependencies = [
+  "xarray (>=2025.1.2,<2026.0.0)",
+  "aif360[lfr] (>=0.6.1,<0.7.0)",
+  "scikit-learn (>=1.6.1,<2.0.0)",
+  "loguru (>=0.7.3,<0.8.0)",
+  "tqdm (>=4.67.1,<5.0.0)",
+  "blackboxauditing (>=0.1.54,<0.2.0)",
+  "cvxpy (>=1.6.4,<2.0.0)",
+]
+
+[tool.poetry]
+packages = [{ include = "fairness_benchmark", from = "src" }]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
