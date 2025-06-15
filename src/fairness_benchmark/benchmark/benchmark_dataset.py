@@ -46,8 +46,8 @@ def benchmark(args):
     #     args, "Processed", bal_proc, disp_proc, avg_proc, stat_proc, eq_proc, theil_proc
     # )
     #
-    save_metric(args, "Original", metric_df_orig)
+    # save_metric(args, "Original", metric_df_orig)
 
-    save_metric(args, "Processed", metric_df_proc)
+    # save_metric(args, "Processed", metric_df_proc)
 
     return

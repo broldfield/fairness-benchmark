@@ -107,8 +107,8 @@ def create_plots(args, type, best_class_threshold, class_threshold, metric_df):
         type,
         best_class_threshold,
         class_threshold,
-        metric_df["Balanced Average"].values,
-        metric_df["Disparate Impact"].values,
+        metric_df["Balanced Average"],
+        metric_df["Disparate Impact"],
     )
     save_plot(args, type, name="Plot_Disp", fig=fig_disp)
     fig_avg_odd = plot_avg_odd(
@@ -116,8 +116,8 @@ def create_plots(args, type, best_class_threshold, class_threshold, metric_df):
         type,
         best_class_threshold,
         class_threshold,
-        metric_df["Balanced Average"].values,
-        metric_df["Average Odds Difference"].values,
+        metric_df["Balanced Average"],
+        metric_df["Average Odds Difference"],
     )
 
     save_plot(args, type, name="Plot_Avg_Odd", fig=fig_avg_odd)
@@ -126,8 +126,8 @@ def create_plots(args, type, best_class_threshold, class_threshold, metric_df):
         type,
         best_class_threshold,
         class_threshold,
-        metric_df["Balanced Average"].values,
-        metric_df["Statistical Parity Difference"].values,
+        metric_df["Balanced Average"],
+        metric_df["Statistical Parity Difference"],
     )
     save_plot(args, type, name="Plot_Stat_Parity", fig=fig_stat_parity)
     fig_eq_opp = plot_eq_opp(
@@ -135,8 +135,8 @@ def create_plots(args, type, best_class_threshold, class_threshold, metric_df):
         type,
         best_class_threshold,
         class_threshold,
-        metric_df["Balanced Average"].values,
-        metric_df["Equal Opportunity Difference"].values,
+        metric_df["Balanced Average"],
+        metric_df["Equal Opportunity Difference"],
     )
     save_plot(args, type, name="Plot_Eq_Opp", fig=fig_eq_opp)
     fig_theil_index = plot_theil_index(
@@ -144,8 +144,8 @@ def create_plots(args, type, best_class_threshold, class_threshold, metric_df):
         type,
         best_class_threshold,
         class_threshold,
-        metric_df["Balanced Average"].values,
-        metric_df["Theil Index"].values,
+        metric_df["Balanced Average"],
+        metric_df["Theil Index"],
     )
     save_plot(args, type, name="Plot_Theil_Index", fig=fig_theil_index)
 
