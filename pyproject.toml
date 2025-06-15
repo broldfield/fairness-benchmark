@@ -13,6 +13,8 @@ dependencies = [
   "tqdm (>=4.67.1,<5.0.0)",
   "blackboxauditing (>=0.1.54,<0.2.0)",
   "cvxpy (>=1.6.4,<2.0.0)",
+  "pyyaml (>=6.0.2,<7.0.0)",
+  "pillow (>=11.2.1,<12.0.0)",
 ]
 
 [tool.poetry]

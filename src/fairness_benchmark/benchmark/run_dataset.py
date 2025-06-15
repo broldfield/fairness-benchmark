@@ -1,5 +1,4 @@
 from fairness_benchmark.benchmark.models import load_model
-from fairness_benchmark.benchmark.plotting import plot_1, plot_2
 from fairness_benchmark.benchmark.utils import (
     optim_threshold,
     split,
@@ -38,19 +37,19 @@ def run_dataset(args, dataset, type):
 
     # Valid
     dataset_valid_pred = dataset_valid.copy(deepcopy=True)
-    X_valid, y_valid, w_valid, s_valid = splitter(args, dataset_valid_pred)
+    X_valid, _, _, _ = splitter(args, dataset_valid_pred)
     dataset_valid_pred.scores = model.predict_proba(X_valid)[:, pos_ind].reshape(-1, 1)
 
     # Test
     dataset_test_pred = dataset_test.copy(deepcopy=True)
-    X_test, y_test, w_test, s_test = splitter(args, dataset_test_pred)
+    X_test, _, _, _ = splitter(args, dataset_test_pred)
     dataset_test_pred.scores = model.predict_proba(X_test)[:, pos_ind].reshape(-1, 1)
 
     best_class_threshold, class_threshold = optim_threshold(
-        args, dataset_valid, dataset_valid_pred
+        args, dataset_valid, dataset_valid_pred, type
     )
 
-    bal, avg, disp = threshold(
+    metric_df = threshold(
         args,
         dataset_test,
         dataset_test_pred,
@@ -58,4 +57,4 @@ def run_dataset(args, dataset, type):
         class_threshold,
     )
 
-    return best_class_threshold, class_threshold, bal, disp, avg
+    return best_class_threshold, class_threshold, metric_df

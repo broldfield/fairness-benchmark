@@ -1,0 +1,51 @@
+# Add a job to this array.
+run: ["job_1.1", "job_1.1_nb", "job_1.1_lr", "job_1.1_mlp"]
+# run: ["job_1.2_nb"]
+jobs:
+  # Create a Job
+  job_1.1:
+    task: "process"
+    dataset: "german"
+    preprocess: "rw"
+    sensitive: "sex"
+  job_1.1_lr:
+    task: "benchmark"
+    dataset: "german"
+    preprocess: "rw"
+    sensitive: "sex"
+    model: "lr"
+  job_1.1_nb:
+    task: "benchmark"
+    dataset: "german"
+    preprocess: "rw"
+    sensitive: "sex"
+    model: "nb"
+  job_1.1_mlp:
+    task: "benchmark"
+    dataset: "german"
+    preprocess: "rw"
+    sensitive: "sex"
+    model: "mlp"
+  job_1.2:
+    task: "process"
+    dataset: "german"
+    preprocess: "lfr"
+    sensitive: "sex"
+  job_1.2_lr:
+    task: "benchmark"
+    dataset: "german"
+    preprocess: "lfr"
+    sensitive: "sex"
+    model: "lr"
+  job_1.2_nb:
+    task: "benchmark"
+    dataset: "german"
+    preprocess: "lfr"
+    sensitive: "sex"
+    model: "nb"
+  job_1.2_mlp:
+    task: "benchmark"
+    dataset: "german"
+    preprocess: "lfr"
+    sensitive: "sex"
+    model: "mlp"

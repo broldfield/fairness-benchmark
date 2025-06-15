@@ -3,21 +3,12 @@ import numpy as np
 from loguru import logger
 import os
 
-
-def save_plot(args, type, name, fig):
-    plot_location = "src/fairness_benchmark/data/plots/"
-    name = f"{type}_{name}_{args.dataset}_{args.preprocess}_{args.sensitive}_{args.target}_{args.model}"
-    path = plot_location + name + ".png"
-
-    save_path = os.path.join(os.getcwd(), path)
-
-    logger.info(f"Saving Plot to: {save_path}")
-    fig.savefig(save_path)
-
-    return
+from fairness_benchmark.utils.loading import save_plot
 
 
-def plot_1(args, type, best_class_thresh, class_thresh_arr, bal_acc_arr, disp_imp_arr):
+def plot_disp(
+    args, type, best_class_thresh, class_thresh_arr, bal_acc_arr, disp_imp_arr
+):
     fig, ax1 = plt.subplots(figsize=(10, 7))
     ax1.plot(class_thresh_arr, bal_acc_arr)
     ax1.set_xlabel("Classification Thresholds", fontsize=16, fontweight="bold")
@@ -34,7 +25,7 @@ def plot_1(args, type, best_class_thresh, class_thresh_arr, bal_acc_arr, disp_im
     return fig
 
 
-def plot_2(
+def plot_avg_odd(
     args, type, best_class_thresh, class_thresh_arr, bal_acc_arr, avg_odds_diff_arr
 ):
     fig, ax1 = plt.subplots(figsize=(10, 7))
@@ -53,11 +44,109 @@ def plot_2(
     return fig
 
 
-def create_plots(args, type, best_class_threshold, class_threshold, bal, disp, avg):
-    fig_1 = plot_1(args, type, best_class_threshold, class_threshold, bal, disp)
+def plot_stat_parity(
+    args, type, best_class_thresh, class_thresh_arr, bal_acc_arr, stat_parity_arr
+):
+    fig, ax1 = plt.subplots(figsize=(10, 7))
+    ax1.plot(class_thresh_arr, bal_acc_arr)
+    ax1.set_xlabel("Classification Thresholds", fontsize=16, fontweight="bold")
+    ax1.set_ylabel("Balanced Accuracy", color="b", fontsize=16, fontweight="bold")
+    ax1.xaxis.set_tick_params(labelsize=14)
+    ax1.yaxis.set_tick_params(labelsize=14)
 
-    fig_2 = plot_2(args, type, best_class_threshold, class_threshold, bal, avg)
+    ax2 = ax1.twinx()
+    ax2.plot(class_thresh_arr, stat_parity_arr, color="r")
+    ax2.set_ylabel("Stat Parity Diff.", color="r", fontsize=16, fontweight="bold")
+    ax2.axvline(best_class_thresh, color="k", linestyle=":")
+    ax2.yaxis.set_tick_params(labelsize=14)
+    ax2.grid(True)
+    return fig
 
-    save_plot(args, type, name="Plot_1", fig=fig_1)
 
-    save_plot(args, type, name="Plot_2", fig=fig_2)
+def plot_eq_opp(
+    args, type, best_class_thresh, class_thresh_arr, bal_acc_arr, eq_opp_arr
+):
+    fig, ax1 = plt.subplots(figsize=(10, 7))
+    ax1.plot(class_thresh_arr, bal_acc_arr)
+    ax1.set_xlabel("Classification Thresholds", fontsize=16, fontweight="bold")
+    ax1.set_ylabel("Balanced Accuracy", color="b", fontsize=16, fontweight="bold")
+    ax1.xaxis.set_tick_params(labelsize=14)
+    ax1.yaxis.set_tick_params(labelsize=14)
+
+    ax2 = ax1.twinx()
+    ax2.plot(class_thresh_arr, eq_opp_arr, color="r")
+    ax2.set_ylabel("Equal Opp.", color="r", fontsize=16, fontweight="bold")
+    ax2.axvline(best_class_thresh, color="k", linestyle=":")
+    ax2.yaxis.set_tick_params(labelsize=14)
+    ax2.grid(True)
+    return fig
+
+
+def plot_theil_index(
+    args, type, best_class_thresh, class_thresh_arr, bal_acc_arr, theil_index_arr
+):
+    fig, ax1 = plt.subplots(figsize=(10, 7))
+    ax1.plot(class_thresh_arr, bal_acc_arr)
+    ax1.set_xlabel("Classification Thresholds", fontsize=16, fontweight="bold")
+    ax1.set_ylabel("Balanced Accuracy", color="b", fontsize=16, fontweight="bold")
+    ax1.xaxis.set_tick_params(labelsize=14)
+    ax1.yaxis.set_tick_params(labelsize=14)
+
+    ax2 = ax1.twinx()
+    ax2.plot(class_thresh_arr, theil_index_arr, color="r")
+    ax2.set_ylabel("Theil Index", color="r", fontsize=16, fontweight="bold")
+    ax2.axvline(best_class_thresh, color="k", linestyle=":")
+    ax2.yaxis.set_tick_params(labelsize=14)
+    ax2.grid(True)
+    return fig
+
+
+def create_plots(args, type, best_class_threshold, class_threshold, metric_df):
+    fig_disp = plot_disp(
+        args,
+        type,
+        best_class_threshold,
+        class_threshold,
+        metric_df["Balanced Average"].values,
+        metric_df["Disparate Impact"].values,
+    )
+    save_plot(args, type, name="Plot_Disp", fig=fig_disp)
+    fig_avg_odd = plot_avg_odd(
+        args,
+        type,
+        best_class_threshold,
+        class_threshold,
+        metric_df["Balanced Average"].values,
+        metric_df["Average Odds Difference"].values,
+    )
+
+    save_plot(args, type, name="Plot_Avg_Odd", fig=fig_avg_odd)
+    fig_stat_parity = plot_stat_parity(
+        args,
+        type,
+        best_class_threshold,
+        class_threshold,
+        metric_df["Balanced Average"].values,
+        metric_df["Statistical Parity Difference"].values,
+    )
+    save_plot(args, type, name="Plot_Stat_Parity", fig=fig_stat_parity)
+    fig_eq_opp = plot_eq_opp(
+        args,
+        type,
+        best_class_threshold,
+        class_threshold,
+        metric_df["Balanced Average"].values,
+        metric_df["Equal Opportunity Difference"].values,
+    )
+    save_plot(args, type, name="Plot_Eq_Opp", fig=fig_eq_opp)
+    fig_theil_index = plot_theil_index(
+        args,
+        type,
+        best_class_threshold,
+        class_threshold,
+        metric_df["Balanced Average"].values,
+        metric_df["Theil Index"].values,
+    )
+    save_plot(args, type, name="Plot_Theil_Index", fig=fig_theil_index)
+
+    plt.close("all")

@@ -8,8 +8,8 @@ def load_model(args, dataset):
         case "nb":
             return CategoricalNB()
         case "lr":
-            return LogisticRegression(max_iter=1000)
+            return LogisticRegression()
         case "mlp":
             return MLPClassifier()
         case _:
-            return CategoricalNB()
+            return LogisticRegression()

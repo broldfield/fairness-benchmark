@@ -40,6 +40,8 @@ def get_dataset(args, type) -> StandardDataset:
 
     return dataset
 
+    save_path = os.path.join(os.getcwd(), path_with_file)
+
 
 def to_csv(args, dataset: StandardDataset, type):
     dataset_location = "src/fairness_benchmark/data/processed_dataset/"
@@ -72,6 +74,7 @@ def load_metric_df(args, bal, disp, avg, stat, eq, theil):
 
     metric_df = pd.DataFrame(data=data)
 
+    save_metric(args, "Checking", metric_df)
     return metric_df
 
 

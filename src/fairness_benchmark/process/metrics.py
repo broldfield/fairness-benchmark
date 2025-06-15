@@ -4,6 +4,9 @@ from aif360.metrics import BinaryLabelDatasetMetric
 from fairness_benchmark.process.preprocessing import get_privileged_list
 from loguru import logger
 
+import pandas as pd
+from fairness_benchmark.utils.loading import save_fairness_metric
+
 
 def pre_processor_metrics(dataset, sensitive_attr):
     privileged_groups, unprivileged_groups = get_privileged_list(sensitive_attr)
@@ -27,6 +30,19 @@ def metrics(args, dataset: StandardDataset, type: str):
     num_pos = dataset_metrics.num_positives()
     num_neg = dataset_metrics.num_negatives()
     smooth = round(dataset_metrics.smoothed_empirical_differential_fairness(), 7)
+
+    metric_data = {
+        "Base Rate": base,
+        "Consistency": consistency,
+        "Disparate": disp,
+        "Mean Difference": mean_diff,
+        "Num Positives": num_pos,
+        "Num Negatives": num_neg,
+        "Empirical Diff": smooth,
+    }
+
+    metric_df = pd.DataFrame(data=metric_data)
+    save_fairness_metric(args, type, metric_df)
 
     logger.info(f"{type} Dataset - Base Rate: {base}")
     logger.info(f"{type} Dataset - Consistency: {consistency}")

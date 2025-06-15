@@ -4,31 +4,17 @@ from collections import OrderedDict
 from aif360.metrics import ClassificationMetric
 import os
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 
 from loguru import logger
 
 from fairness_benchmark.process.preprocessing import get_privileged_list
-
-
-def save_metrics(args, metrics):
-    metric_location = "src/fairness_benchmark/data/metric/"
-    name = f"metrics_{args.dataset}_{args.preprocess}_{args.sensitive}_{args.target}"
-    path = metric_location + name + ".csv"
-
-    save_path = os.path.join(os.getcwd(), path)
-
-    logger.info(f"Saving Metrics to: {save_path}")
-
-    return
+from fairness_benchmark.utils.loading import load_metric_df, save_metric, to_csv
 
 
 def scale_data(args, dataset, weight=None):
-    scaler = MinMaxScaler()
-    if weight is not None:
-        scaled_dataset = scaler.fit_transform(dataset)
-        return scaled_dataset
-
+    scaler = StandardScaler()
     scaled_dataset = scaler.fit_transform(dataset)
     return scaled_dataset
 
@@ -77,7 +63,7 @@ def compute_metrics(
     return metrics
 
 
-def optim_threshold(args, dataset, dataset_pred, original=True):
+def optim_threshold(args, dataset, dataset_pred, type="Original"):
     privileged_groups, unprivileged_groups = get_privileged_list(args.sensitive)
 
     num_thresh = 100
@@ -89,8 +75,8 @@ def optim_threshold(args, dataset, dataset_pred, original=True):
         dataset_pred.labels[~fav_inds] = dataset_pred.unfavorable_label
 
         classified_metric_orig_valid = ClassificationMetric(
-            dataset,
-            dataset_pred,
+            dataset=dataset,
+            classified_dataset=dataset_pred,
             unprivileged_groups=unprivileged_groups,
             privileged_groups=privileged_groups,
         )
@@ -104,22 +90,27 @@ def optim_threshold(args, dataset, dataset_pred, original=True):
     best_class_thresh = class_thresh_arr[best_ind]
     strPreprocess = ""
 
-    if original:
+    if type == "Original":
         strPreprocess = f"Without {args.preprocess}"
-    if not original:
-        strPreprocess = f"With{args.preprocess}"
+    if type == "Processed":
+        strPreprocess = f"With {args.preprocess}"
 
     logger.info(f"Best balanced accuracy ({strPreprocess}) = %.4f" % np.max(ba_arr))
-    print("Optimal classification threshold (no reweighing) = %.4f" % best_class_thresh)
+    logger.info(
+        f"Optimal classification threshold ({strPreprocess}) = %.4f" % best_class_thresh
+    )
 
     return best_class_thresh, class_thresh_arr
 
 
 def threshold(args, dataset, dataset_pred, best_class_thresh, class_thresh_arr):
     privileged_groups, unprivileged_groups = get_privileged_list(args.sensitive)
-    bal_acc_arr_orig = []
-    disp_imp_arr_orig = []
-    avg_odds_diff_arr_orig = []
+    bal_acc_arr = []
+    disp_imp_arr = []
+    avg_odds_diff_arr = []
+    stat_par_diff_arr = []
+    eq_op_diff_arr = []
+    theil_index_arr = []
 
     logger.info("Classification threshold used = %.4f" % best_class_thresh)
     for thresh in tqdm(class_thresh_arr):
@@ -132,23 +123,37 @@ def threshold(args, dataset, dataset_pred, best_class_thresh, class_thresh_arr):
         dataset_pred.labels[fav_inds] = dataset_pred.favorable_label
         dataset_pred.labels[~fav_inds] = dataset_pred.unfavorable_label
 
-        metric_test_bef = compute_metrics(
-            dataset,
-            dataset_pred,
-            unprivileged_groups,
-            privileged_groups,
+        metrics = compute_metrics(
+            dataset_true=dataset,
+            dataset_pred=dataset_pred,
+            unprivileged_groups=unprivileged_groups,
+            privileged_groups=privileged_groups,
             disp=disp,
         )
-        save_metrics(args, metric_test_bef)
 
-        bal_acc_arr_orig.append(metric_test_bef["Balanced accuracy"])
-        avg_odds_diff_arr_orig.append(metric_test_bef["Average odds difference"])
-        disp_imp_arr_orig.append(metric_test_bef["Disparate impact"])
+        bal_acc_arr.append(metrics["Balanced accuracy"])
+        avg_odds_diff_arr.append(metrics["Average odds difference"])
+        disp_imp_arr.append(metrics["Disparate impact"])
+        stat_par_diff_arr.append(metrics["Statistical parity difference"])
+        eq_op_diff_arr.append(metrics["Equal opportunity difference"])
+        theil_index_arr.append(metrics["Theil index"])
 
-    return bal_acc_arr_orig, avg_odds_diff_arr_orig, disp_imp_arr_orig
+    data = {
+        "Balanced Average": bal_acc_arr,
+        "Average Odds Difference": avg_odds_diff_arr,
+        "Disparate Impact": disp_imp_arr,
+        "Statistical Parity Difference": stat_par_diff_arr,
+        "Equal Opportunity Difference": eq_op_diff_arr,
+        "Theil Index": theil_index_arr,
+    }
+
+    metric_df = pd.DataFrame(data=data)
+    save_metric(args, type, metric_df)
+
+    return data
 
 
 def split(args, dataset):
     dataset_train, dataset_leftover = dataset.split([0.7], shuffle=True)
-    dataset_test, dataset_valid = dataset_leftover.split([0.5], shuffle=True)
+    dataset_valid, dataset_test = dataset_leftover.split([0.5], shuffle=True)
     return dataset_train, dataset_test, dataset_valid

@@ -1,0 +1,8 @@
+# Create Datasets in pairings of the Dataset name and the Sensitive Attribute within the datasets array:
+# E.g. {"Dataset1", "Sensitive1" }, {"Dataset2", "Sensitive2"}
+datasets: [{ "german", "sex" }, { "adult", "sex" }]
+# What Fairness Pre-processing techniques to use
+fairness: ["rw", "dir"]
+
+# What Models to use
+models: [lr", "mlp"]

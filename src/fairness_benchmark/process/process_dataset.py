@@ -13,6 +13,8 @@ def process(args):
     after_metrics = metrics(args, dataset_processed, "Processed")
 
     save_dataset(args, dataset_processed, "Processed")
-    to_csv(args, dataset, "Processed")
+    to_csv(args, dataset_processed, "Processed")
+
+    to_csv(args, dataset, "Original")
 
     return

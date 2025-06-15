@@ -15,7 +15,10 @@ from aif360.algorithms.preprocessing.optim_preproc_helpers.data_preproc_function
 
 from loguru import logger
 
+import numpy as np
+
 from fairness_benchmark.process.custom_dataset import CustomDataset
+from fairness_benchmark.process.preprocessing import get_privileged_list
 
 
 def load_dataset(args) -> StandardDataset | BinaryLabelDataset:
@@ -69,46 +72,83 @@ def load_dataset(args) -> StandardDataset | BinaryLabelDataset:
     raise ValueError
 
 
-def load_aif_adult_dataset(
-    sensitive_attr=["sex"], groups=[{1.0: "Male", 0.0: "Female"}], priv_group=[["Male"]]
-) -> StandardDataset:
-    label_map = {1.0: ">50K", 0.0: "<=50K"}
-    adult_dataset = AdultDataset(
-        protected_attribute_names=sensitive_attr,
-        categorical_features=[
-            "workclass",
-            "education",
-            "marital-status",
-            "occupation",
-            "relationship",
-            "native-country",
-            "race",
-        ],
-        privileged_classes=priv_group,
-        metadata={"label_map": label_map, "protected_attribute_maps": groups},
-    )
+def load_aif_adult_dataset(sensitive_attr=["sex"]) -> StandardDataset:
+    logger.info("Loading Adult Dataset")
+    # priv = ""
+    # if sensitive_attr == ["sex"]:
+    #     priv = [["Male"]]
+    # if sensitive_attr == ["race"]:
+    #     priv = [["White"]]
 
+    adult_dataset = load_preproc_data_adult(sensitive_attr)
+
+    # adult_dataset = AdultDataset(
+    #     protected_attribute_names=sensitive_attr,
+    #     privileged_classes=priv,
+    #     categorical_features=[],
+    #     features_to_keep=["age", "education-num"],
+    # )
     return adult_dataset
 
 
 def load_aif_bank_dataset(sensitive_attr=["age"]) -> StandardDataset:
     bank_dataset = BankDataset(protected_attribute_names=sensitive_attr)
+    logger.info(bank_dataset.label_names)
+    logger.info(bank_dataset.protected_attribute_names)
+    logger.info(bank_dataset.favorable_label)
+
     return bank_dataset
 
 
 def load_aif_compas_dataset(sensitive_attr=["sex"]) -> StandardDataset:
-    compas_dataset = CompasDataset(protected_attribute_names=sensitive_attr)
+    # if sensitive_attr == ["sex"]:
+    #     label_map = {1.0: "Did recid.", 0.0: "No recid."}
+    #     protected_attribute_maps = [{1.0: "Male", 0.0: "Female"}]
+    #     compas_dataset = CompasDataset(
+    #         protected_attribute_names=["sex"],
+    #         privileged_classes=[["Male"]],
+    #         features_to_drop=["race"],
+    #         metadata={
+    #             "label_map": label_map,
+    #             "protected_attribute_maps": protected_attribute_maps,
+    #         },
+    #     )
+    #     return compas_dataset
+    # else:
+    #     label_map = {1.0: "Did recid.", 0.0: "No recid."}
+    #     protected_attribute_maps = [{1.0: "Caucasian", 0.0: "Not Caucasian"}]
+    #     compas_dataset = CompasDataset(
+    #         protected_attribute_names=["race"],
+    #         privileged_classes=[["Caucasian"]],
+    #         features_to_drop=["sex"],
+    #         metadata={
+    #             "label_map": label_map,
+    #             "protected_attribute_maps": protected_attribute_maps,
+    #         },
+    #     )
+    #     return compas_dataset
 
+    compas_dataset = load_preproc_data_compas(sensitive_attr)
     return compas_dataset
 
 
-def load_aif_german_dataset(sensitive_attr=["sex"]) -> StandardDataset:
-    german_dataset = GermanDataset(protected_attribute_names=sensitive_attr)
+def load_aif_german_dataset(sensitive_attr=["age"]) -> StandardDataset:
+    # priv = ""
+    # if sensitive_attr == ["sex"]:
+    #     priv = [["male"]]
+    # if sensitive_attr == ["race"]:
+    #     priv = lambda x: x > 25
+    # german_dataset = GermanDataset(
+    #     protected_attribute_names=sensitive_attr,
+    #     privileged_classes=priv,
+    # )
+    # logger.info(f"Label names for german is: {german_dataset.labels}")
+    german_dataset = load_preproc_data_german(sensitive_attr)
     return german_dataset
 
 
-def load_aif_meps_dataset(sensitive_attr=["race"]) -> StandardDataset:
-    meps_dataset = MEPSDataset21()
+def load_aif_meps_dataset(sensitive_attr=["RACE"]) -> StandardDataset:
+    meps_dataset = MEPSDataset21(protected_attribute_names=sensitive_attr)
     return meps_dataset
 
 
