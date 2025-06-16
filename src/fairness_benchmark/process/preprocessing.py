@@ -100,9 +100,7 @@ def run_dir(args, dataset):
 
     logger.info("Using disparateImpactRemover on the Dataset...")
 
-    dir_pp = DisparateImpactRemover(
-        repair_level=1.0, sensitive_attribute=args.sensitive
-    )
+    dir_pp = DisparateImpactRemover(repair_level=1, sensitive_attribute=args.sensitive)
 
     result = dir_pp.fit_transform(dataset)
 

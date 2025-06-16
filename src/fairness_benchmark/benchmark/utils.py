@@ -14,7 +14,7 @@ from fairness_benchmark.utils.loading import load_metric_df, save_metric, to_csv
 
 
 def scale_data(args, dataset, weight=None):
-    scaler = StandardScaler()
+    scaler = MinMaxScaler(copy=False)
     scaled_dataset = scaler.fit_transform(dataset)
     return scaled_dataset
 

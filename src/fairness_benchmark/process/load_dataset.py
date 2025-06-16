@@ -82,11 +82,19 @@ def load_aif_adult_dataset(sensitive_attr=["sex"]) -> StandardDataset:
 
     adult_dataset = load_preproc_data_adult(sensitive_attr)
 
+    logger.info(adult_dataset.feature_names)
+
     # adult_dataset = AdultDataset(
     #     protected_attribute_names=sensitive_attr,
     #     privileged_classes=priv,
     #     categorical_features=[],
-    #     features_to_keep=["age", "education-num"],
+    #     features_to_keep=[
+    #         "age",
+    #         "education-num",
+    #         "capital-gain",
+    #         "capital-loss",
+    #         "hours-per-week",
+    #     ],
     # )
     return adult_dataset
 
